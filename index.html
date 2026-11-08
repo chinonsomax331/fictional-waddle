@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My InboxVault - Save Codes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;padding:15px;background:#f6f8fa}
+input,button{width:100%;padding:12px;margin:5px 0;border-radius:8px;border:1px solid #ccc;font-size:16px}
+button{background:#1f883d;color:white;border:none;font-weight:bold}
+.card{background:white;padding:12px;border-radius:10px;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>My InboxVault</h1>
+<p>Save your important codes here</p>
+<input id="title" placeholder="Title e.g. GitHub code">
+<input id="code" placeholder="Code e.g. 58091176">
+<button onclick="saveCode()">Save Code</button>
+<input id="search" placeholder="Search..." oninput="showCodes()">
+<div id="list"></div>
+<script>
+let codes = JSON.parse(localStorage.getItem('vault') || '[]');
+function saveCode(){
+  let t=document.getElementById('title').value;
+  let c=document.getElementById('code').value;
+  if(!t||!c){alert('Type title and code');return;}
+  codes.unshift({title:t,code:c,date:new Date().toLocaleString()});
+  localStorage.setItem('vault',JSON.stringify(codes));
+  document.getElementById('title').value='';
+  document.getElementById('code').value='';
+  showCodes();
+}
+function showCodes(){
+  let q=document.getElementById('search').value.toLowerCase();
+  let html='';
+  codes.forEach((item,i)=>{
+    if(item.title.toLowerCase().includes(q)||item.code.includes(q)){
+      html+=`<div class="card"><b>${item.title}</b><br>${item.code}<br><small>${item.date}</small><br><button onclick="delCode(${i})" style="background:red">Delete</button></div>`;
+    }
+  });
+  document.getElementById('list').innerHTML=html||'<p>No codes yet</p>';
+}
+function delCode(i){codes.splice(i,1);localStorage.setItem('vault',JSON.stringify(codes));showCodes();}
+showCodes();
+</script>
+</body>
+</html>
